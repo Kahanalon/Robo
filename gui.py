@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 
-from main import*
+from main import move_chassi, get_nway_dis, average_dis
 
 """
 Basic GUI for Robomaster 
@@ -12,7 +12,7 @@ def run_gui():
     # sg.set_options(element_padding=(3, 2))
 
     row_1 = sg.Frame('Movement:',
-                     [[sg.Text('X-Axis(m):', pad=((10, 3), 25)), sg.Input(size=(6, 1), default_text='.3', key='-X-', enable_events=True,
+                     [[sg.Text('X-Axis(m):', pad=((10, 3), 25)), sg.Input(size=(6, 1), default_text='.3', key='-X-', #enable_events=True,
                                                                           background_color='white', text_color='black'),
                        sg.Text('Y-Axis(m):', pad=((10, 3), 0)), sg.Input(size=(6, 1), default_text='.3', key='-Y-',
                                                                          background_color='white', text_color='black'),

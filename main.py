@@ -1,8 +1,6 @@
 from robomaster import robot
 import PySimpleGUI as sg
-
-from gui import*
-
+import time
 
 ep_robot = robot.Robot()
 
@@ -14,13 +12,7 @@ print("Robot Version: {0}".format(ep_version))
 
 
 if connected:
-    run_gui()
-    quit = False
-    while not quit:
-        inp = input("type q to quit: ").strip()
-        if inp == "q":
-            quit = True
-            ep_robot.close()
+    print('connected')
 
 else:
     print("ERROR - failed to connect")
@@ -33,15 +25,20 @@ def get_nway_dis(n):
         ep_chassis.move(0, 0, 360 / n, xy_speed=1, z_speed=30).wait_for_completed()
     return dist_array
 
+def dis(x):
+    y = x
 
 def average_dis(num_of_readings):
+    n = num_of_readings
     total_dis = 0
-    while num_of_readings > 0:
-        # ep_robot.sensor.sub_distance(freq=1, callback=lambda x: print(x))
-        cur_dis = ep_robot.sensor.sub_distance(freq=1, callback=lambda x: print(x))
+    dif_dist = []
+    while n > 0:
+        ep_robot.sensor.sub_distance(freq=1, callback=lambda x: dif_dist.append(x))
+        print(dif_dist)
         # ep_robot.unsub_distance( )
-        total_dis += cur_dis
-        num_of_readings -= 1
+        #total_dis += cur_dis
+        n -=1
+    # ep_robot.sensor.unsub_distance()
     return total_dis / num_of_readings
 
 
@@ -49,6 +46,6 @@ def move_chassi(x, y, z, xy_speed, rot_speed):
     ep_chassis.move(x, y, z, xy_speed, rot_speed).wait_for_completed()
 
 
-
+average_dis(1)
 
 
