@@ -1,6 +1,8 @@
+import time
+
 import PySimpleGUI as sg
 
-from main import move_chassi, get_nway_dis, average_dis
+from main import move_chassi, get_nway_dis, average_dis, cur_dist, one_direction_dis_arr, four_way_dist_arr
 
 """
 Basic GUI for Robomaster 
@@ -77,9 +79,26 @@ def run_gui():
             move_chassi(float(values['-X-']), float(values['-Y-']), float(values['-ROTATION_DEG-']), float(values['-XY_SPEED-']),
                         float(values['-ROTATION_SPEED-']))
         elif event == '-N_SCAN-':
-            window['-DIST_ARR-'].update(value=str(get_nway_dis(values['N'])))
+            average_dis(1)
+            time.sleep(5)
+            print("second run n")
+            average_dis(1)
+            print("one dir: ", one_direction_dis_arr)
+            try:
+                four_way_dist_arr.append(sum(one_direction_dis_arr)/len(one_direction_dis_arr))
+            except ZeroDivisionError as e:
+                print("one_direction_dis_arr is empty. error: ", e)
+            print("nway: ", four_way_dist_arr)
+            one_direction_dis_arr.clear()
+            # window['-DIST_ARR-'].update(value=str(get_nway_dis(values['N'])))
         elif event == '-SCAN-':
-            window['-DIST-'].update(value=average_dis(1))
+            average_dis(1)
+            time.sleep(5)
+            print("second run")
+            average_dis(1)
+            print(one_direction_dis_arr)
+
+            # window['-DIST-'].update(value=cur_dist) check how to live update
         elif event == '-1hz-':
             chosen_freq = 1
         elif event == '-5hz-':
