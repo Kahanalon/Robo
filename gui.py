@@ -2,7 +2,7 @@ import time
 
 import PySimpleGUI as sg
 
-from main import move_chassi, get_nway_dis, average_dis, cur_dist, one_direction_dis_arr, four_way_dist_arr
+from main import move_chassi, get_nway_dis, average_dis, cur_dist, one_direction_dis_arr, nway_dist_arr
 
 """
 Basic GUI for Robomaster 
@@ -85,10 +85,10 @@ def run_gui():
             average_dis(1)
             print("one dir: ", one_direction_dis_arr)
             try:
-                four_way_dist_arr.append(sum(one_direction_dis_arr)/len(one_direction_dis_arr))
+                nway_dist_arr.append(sum(one_direction_dis_arr) / len(one_direction_dis_arr))
             except ZeroDivisionError as e:
                 print("one_direction_dis_arr is empty. error: ", e)
-            print("nway: ", four_way_dist_arr)
+            print("nway: ", nway_dist_arr)
             one_direction_dis_arr.clear()
             # window['-DIST_ARR-'].update(value=str(get_nway_dis(values['N'])))
         elif event == '-SCAN-':
