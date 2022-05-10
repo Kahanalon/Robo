@@ -7,6 +7,7 @@ Basic GUI for Robomaster
 """
 
 sg.theme('Dark')
+
 # sg.set_options(element_padding=(3, 2))
 
 row_1 = sg.Frame('Movement:',
@@ -33,7 +34,7 @@ row_3 = sg.Frame('Sensor Freq(Hz):',
                    sg.Radio('20', 'Hz', key='-20hz-', size=(3, 1), enable_events=True),
                    sg.Radio('50', 'Hz', key='-50hz-', size=(3, 1), enable_events=True),
                    sg.Text('Distance = ', key='-DIST-', size=(15, 1))]], )  # make in cm
-chosen_freq = 1
+
 
 row_4 = sg.Frame('', [[sg.Button('Go', key='-GO-', size=(10, 3)), sg.Button('Scan', key='-SCAN-', size=(10, 3))]],
                  border_width=0)
@@ -75,7 +76,7 @@ connected = ep_robot.initialize(conn_type="ap")
 ep_chassis = ep_robot.chassis
 ep_version = ep_robot.get_version()
 print("Robot Version: {0}".format(ep_version))
-
+chosen_freq = 1
 
 class Robot_Params:
 
@@ -85,16 +86,6 @@ class Robot_Params:
         self.n_way = n_way
         self.cur_dist = cur_dist
         self.cur_avg_dist = cur_avg_dist
-
-
-    #
-    # def get_nway_dis(n):
-    #     dist_array = []
-    #     for i in range(n):
-    #         dist_array.append(nway_measure_distance(5))  # 5 distance samples
-    #         ep_chassis.move(0, 0, 360 / n, xy_speed=1, z_speed=30).wait_for_completed()
-    #     return dist_array
-
 
     def measure_handler(self, dis_arr):
         if len(self.nway_dist_arr) == self.n_way:  # finished n-way measure
@@ -124,6 +115,9 @@ def move_chassi(x, y, z, xy_speed=0.5, rot_speed=30.0):
     ep_chassis.move(x, y, z, xy_speed, rot_speed).wait_for_completed()
 
 
+
+
+
 def listener():
     # for key, state in {'-Start-': False}.items():
     #     window[key].update(disabled=state)
@@ -142,6 +136,7 @@ def listener():
             nway_measure_distance(n_scan)
             time.sleep(5)
             print(f"finished n_scan")
+            values['-DIST_ARR-'] = f'Output = {n_scan.nway_dist_arr}'
             # try:
             #     params.nway_dist_arr.append(sum(params.one_direction_dis_arr) / len(params.one_direction_dis_arr))
             # except ZeroDivisionError as e:
