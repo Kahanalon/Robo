@@ -45,12 +45,13 @@ col_1 = sg.Frame('Manual Control:', [[row_1],
                                      [row_4]], element_justification='center')
 
 col_2 = sg.Frame('Functions:',
-                 [[sg.Text('n-way distance:', pad=((10, 3), 30)), sg.Input(size=(6, 1), default_text='4', key='-N-',
+                 [[sg.Text('n-way distance:', pad=((20, 3), 30)), sg.Input(size=(6, 1), default_text='4', key='-N-',
                                                                            background_color='white',
                                                                            text_color='black'),
-                   sg.Button('Go', key='-N_SCAN-', size=(10, 3)),
-                   sg.Text('Output = ', key='-DIST_ARR-', size=(15, 1))
+                   sg.Button('Go', key='-N_SCAN-', size=(30, 3)),
+
                    ],
+                  [sg.Text('Output = ', key='-DIST_ARR-', size=(30, 1))]
                   ])
 
 layout = [[col_1],
@@ -88,7 +89,7 @@ class Robot_Params:
         self.cur_avg_dist = cur_avg_dist
 
     def measure_handler(self, dis_arr):
-        if len(self.nway_dist_arr) == self.n_way:  # finished n-way measure
+        if len(self.nway_dist_arr) == int(self.n_way):  # finished n-way measure
             print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             return
 
@@ -96,8 +97,9 @@ class Robot_Params:
             cur_avg_dist = sum(self.one_direction_dis_arr) / len(self.one_direction_dis_arr)
             print("cur_avg_dist is: ", cur_avg_dist)
             self.nway_dist_arr.append(cur_avg_dist)
+            print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             self.one_direction_dis_arr = []
-            # move_chassi(0, 0, 90, rot_speed=100)
+            move_chassi(0, 0, 90, rot_speed=100)
             return
         cur_dist = dis_arr[0]
         self.one_direction_dis_arr.append(cur_dist)
@@ -105,7 +107,7 @@ class Robot_Params:
 
 
 def nway_measure_distance(n_scan):
-    ep_robot.sensor.sub_distance(freq=1,
+    ep_robot.sensor.sub_distance(freq=5,
                                  callback=n_scan.measure_handler)
     time.sleep(10)
     ep_robot.sensor.unsub_distance()
@@ -134,9 +136,9 @@ def listener():
         elif event == '-N_SCAN-':
             n_scan = Robot_Params([], [], values['-N-'], 0, 0)
             nway_measure_distance(n_scan)
-            time.sleep(5)
+            #time.sleep(10)
             print(f"finished n_scan")
-            values['-DIST_ARR-'] = f'Output = {n_scan.nway_dist_arr}'
+            window['-DIST_ARR-'].update(f'Output = {n_scan.nway_dist_arr}')
             # try:
             #     params.nway_dist_arr.append(sum(params.one_direction_dis_arr) / len(params.one_direction_dis_arr))
             # except ZeroDivisionError as e:
@@ -148,7 +150,7 @@ def listener():
         elif event == '-SCAN-':
             scan = Robot_Params([], [], 1, 0, 0)
             nway_measure_distance(scan)
-            time.sleep(5)
+            #time.sleep(5)
 
             print(f"finished scan")
 
@@ -177,7 +179,7 @@ def listener():
         #     [window[key].update(disabled=value) for key, value in {
         #         '-Start-': False, '-Stop-': True, '-Reset-': True, '-Submit-': False}.items()]
         #     recording = False
-
+    ep_robot.close()
     window.close()
 
 
