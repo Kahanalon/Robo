@@ -7,7 +7,7 @@ Basic GUI for Robomaster
 """
 
 # sg.theme('Dark')
-
+# todo:  distance from sensoris 22.5cm, decreace 22.5/2 from distance[0] and increase from distance[1]
 # sg.set_options(element_padding=(3, 2))
 
 row_1 = sg.Frame('Movement:',
@@ -89,6 +89,7 @@ class Robot_Params:
         self.cur_avg_dist = cur_avg_dist
 
     def measure_handler(self, dis_arr):
+        print(f"TWO SENSORS?: {dis_arr}")
         if len(self.nway_dist_arr) == int(self.n_way):  # finished n-way measure
             print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             return
@@ -101,7 +102,7 @@ class Robot_Params:
             self.one_direction_dis_arr = []
             move_chassi(0, 0, 366/int(self.n_way), rot_speed=70) # change +1 in relation to 6/
             return
-        cur_dist = dis_arr[0]
+        cur_dist = dis_arr[0]  # todo: (with two sensor) dis_arr[0] hold front sensor dist and dis_arr[1] the back one. change code accordingly
         self.one_direction_dis_arr.append(cur_dist)
         print("one_direction_dist_arr: ", self.one_direction_dis_arr)
 
