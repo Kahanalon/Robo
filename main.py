@@ -6,7 +6,7 @@ import time
 Basic GUI for Robomaster 
 """
 
-sg.theme('Dark')
+# sg.theme('Dark')
 
 # sg.set_options(element_padding=(3, 2))
 
@@ -51,7 +51,7 @@ col_2 = sg.Frame('Functions:',
                    sg.Button('Go', key='-N_SCAN-', size=(30, 3)),
 
                    ],
-                  [sg.Text('Output = ', key='-DIST_ARR-', size=(30, 1))]
+                  [sg.Text('Output = ', key='-DIST_ARR-', size=(40, 1))]
                   ])
 
 layout = [[col_1],
@@ -99,7 +99,7 @@ class Robot_Params:
             self.nway_dist_arr.append(cur_avg_dist)
             print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             self.one_direction_dis_arr = []
-            move_chassi(0, 0, 90, rot_speed=100)
+            move_chassi(0, 0, 366/int(self.n_way), rot_speed=70) # change +1 in relation to 6/
             return
         cur_dist = dis_arr[0]
         self.one_direction_dis_arr.append(cur_dist)
@@ -109,7 +109,7 @@ class Robot_Params:
 def nway_measure_distance(n_scan):
     ep_robot.sensor.sub_distance(freq=5,
                                  callback=n_scan.measure_handler)
-    time.sleep(10)
+    time.sleep(2.5 * int(n_scan.n_way))  #sleep time is crucial
     ep_robot.sensor.unsub_distance()
 
 
@@ -133,25 +133,16 @@ def listener():
             move_chassi(float(values['-X-']), float(values['-Y-']), float(values['-ROTATION_DEG-']),
                         float(values['-XY_SPEED-']),
                         float(values['-ROTATION_SPEED-']))
-        elif event == '-N_SCAN-':
+        elif event == '-N_SCAN-': #fix the n
             n_scan = Robot_Params([], [], values['-N-'], 0, 0)
             nway_measure_distance(n_scan)
-            #time.sleep(10)
             print(f"finished n_scan")
             window['-DIST_ARR-'].update(f'Output = {n_scan.nway_dist_arr}')
-            # try:
-            #     params.nway_dist_arr.append(sum(params.one_direction_dis_arr) / len(params.one_direction_dis_arr))
-            # except ZeroDivisionError as e:
-            #     print("one_direction_dis_arr is empty. error: ", e)
-            # print("nway: ", params.nway_dist_arr)
-            # params.one_direction_dis_arr.clear()
 
-            # window['-DIST_ARR-'].update(value=str(get_nway_dis(values['N'])))
-        elif event == '-SCAN-':
+        elif event == '-SCAN-':  #didn't cehck yet
             scan = Robot_Params([], [], 1, 0, 0)
             nway_measure_distance(scan)
             #time.sleep(5)
-
             print(f"finished scan")
 
             # window['-DIST-'].update(value=cur_dist) check how to live update
@@ -165,6 +156,8 @@ def listener():
             chosen_freq = 20
         elif event == '-50hz-':
             chosen_freq = 50
+
+
         # elif event == ep_chassis.move(window['-X-'], window['-Y-'], window['-ROTATION_DEG-'], window['-XY_SPEED-'], window['-ROTATION_SPEED-']).wait_for_completed()'-Stop-' and recording:
         #     [window[key].update(disabled=value) for key, value in {
         #         '-Start-': False, '-Stop-': True, '-Reset-': False, '-Submit-': False}.items()]
@@ -179,8 +172,8 @@ def listener():
         #     [window[key].update(disabled=value) for key, value in {
         #         '-Start-': False, '-Stop-': True, '-Reset-': True, '-Submit-': False}.items()]
         #     recording = False
+
     ep_robot.close()
     window.close()
-
 
 listener()
