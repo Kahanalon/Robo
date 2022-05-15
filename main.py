@@ -7,7 +7,7 @@ Basic GUI for Robomaster
 """
 
 # sg.theme('Dark')
-# todo:  distance from sensoris 22.5cm, decreace 22.5/2 from distance[0] and increase from distance[1]
+# todo:  distance from sensors 22.5cm, decrease 22.5/2 from distance[0] and increase from distance[1]
 # sg.set_options(element_padding=(3, 2))
 
 row_1 = sg.Frame('Movement:',
