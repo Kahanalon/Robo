@@ -81,68 +81,56 @@ chosen_freq = 1
 
 class Robot_Params:
 
-    def __init__(self, front_back_dist_arr, left_right_dist_arr, is_front, front_direction_dis_arr, back_direction_dis_arr, front_dis):
-        self.front_back_dist_arr = front_back_dist_arr
-        self.left_right_dist_arr = left_right_dist_arr
-        self.is_front = is_front
+    def __init__(self, front_direction_dis_arr, back_direction_dis_arr, nway_dist_arr, n_way, cur_dist, cur_avg_dist):
         self.front_direction_dis_arr = front_direction_dis_arr
         self.back_direction_dis_arr = back_direction_dis_arr
-        self.front_dis = front_dis
+        self.nway_dist_arr = nway_dist_arr
+        self.n_way = n_way
+        self.cur_dist = cur_dist
+        self.cur_avg_dist = cur_avg_dist
 
-
-    def measure_front_back(self, dis_arr):
-        if len(self.front_back_dist_arr) == 2:  # finished 2 measure
-            print(f"front and back distance array: ", self.front_back_dist_arr)
+    def measure_handler1(self, dis_arr):
+        # print(f"TWO SENSORS?: {dis_arr}") what is this?
+        if len(self.nway_dist_arr) == int(self.n_way):  # finished n-way measure
+            print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             return
 
         if len(self.front_direction_dis_arr) == 5:  # 5 samples average
-            avg_front = sum(self.front_direction_dis_arr) / 5
-            print("front_avg_dist is: ", avg_front)
-            self.front_back_dist_arr.append(avg_front)
-            avg_back = sum(self.back_direction_dis_arr) / 5
-            print("back_avg_dist is: ", avg_back)
-            self.front_direction_dis_arr.append(avg_back)
+            cur_avg_dist = sum(self.front_direction_dis_arr) / len(self.front_direction_dis_arr)
+            print("1: cur_avg_dist is: ", cur_avg_dist)
+            self.nway_dist_arr.append(cur_avg_dist)
+            print(f"1: {self.n_way}-way distance array: ", self.nway_dist_arr)
             self.front_direction_dis_arr = []
-            self.back_direction_dis_arr = []
+            move_chassi(0, 0, 90, rot_speed=70) # change +1 in relation to 6/
             return
-        front_dist = dis_arr[0]
-        self.front_direction_dis_arr.append(front_dist)
-        back_dist = dis_arr[1]
-        self.back_direction_dis_arr.append(back_dist)
-        # print("one_direction_dist_arr: ", self.one_direction_dis_arr)
+        cur_dist = dis_arr[0]  # todo: (with two sensor) dis_arr[0] hold front sensor dist and dis_arr[1] the back one. change code accordingly
+        self.front_direction_dis_arr.append(cur_dist)
+        print("front_direction_dist_arr: ", self.front_direction_dis_arr)
 
-    def measure_left_right(self, dis_arr):
-        if len(self.left_right_dist_arr) == 2:  # finished 2 measure
-            print(f"left anf right distance array: ", self.front_back_dist_arr)
+    def measure_handler2(self, dis_arr):
+        if len(self.nway_dist_arr) == int(self.n_way):  # finished n-way measure
+            print(f"2: {self.n_way}-way distance array: ", self.nway_dist_arr)
             return
 
-        if len(self.front_direction_dis_arr) == 5:  # 5 samples average
-            avg_front = sum(self.front_direction_dis_arr) / 5
-            print("front_avg_dist is: ", avg_front)
-            self.left_right_dist_arr.append(avg_front)
-            avg_back = sum(self.back_direction_dis_arr) / 5
-            print("back_avg_dist is: ", avg_back)
-            self.left_right_dist_arr.append(avg_back)
-            self.front_direction_dis_arr = []
+        if len(self.back_direction_dis_arr) == 5:  # 5 samples average
+            cur_avg_dist = sum(self.back_direction_dis_arr) / len(self.back_direction_dis_arr)
+            print("2: cur_avg_dist is: ", cur_avg_dist)
+            self.nway_dist_arr.append(cur_avg_dist)
+            print(f"2: {self.n_way}-way distance array: ", self.nway_dist_arr)
             self.back_direction_dis_arr = []
+            move_chassi(0, 0, 90, rot_speed=70) # change +1 in relation to 6/
             return
-        front_dist = dis_arr[0]
-        self.front_direction_dis_arr.append(front_dist)
-        back_dist = dis_arr[1]
-        self.back_direction_dis_arr.append(back_dist)
-        # print("one_direction_dist_arr: ", self.one_direction_dis_arr)
+        cur_dist = dis_arr[1]  # todo: (with two sensor) dis_arr[0] hold front sensor dist and dis_arr[1] the back one. change code accordingly
+        self.back_direction_dis_arr.append(cur_dist)
+        print("back_direction_dist_arr: ", self.back_direction_dis_arr)
 
 
 def nway_measure_distance(n_scan):
-    if (n_scan.is_front):
-        ep_robot.sensor.sub_distance(freq=5,
-                                     callback=n_scan.measure_front_back)
-    else:
-        move_chassi(0, 0, 90, rot_speed=70)
-        ep_robot.sensor.sub_distance(freq=5,
-                                     callback=n_scan.measure_left_right)
-        move_chassi(0, 0, -90, rot_speed=70)  # change +1 in relation to 6/
-    time.sleep(10)  #sleep time is crucial
+    ep_robot.sensor.sub_distance(freq=5,
+                                 callback=n_scan.measure_handler1) #sensor 2
+    ep_robot.sensor.sub_distance(freq=5,
+                                 callback=n_scan.measure_handler2) #sensor 2
+    time.sleep(2.5 * int(n_scan.n_way))  #sleep time is crucial
     ep_robot.sensor.unsub_distance()
 
 
