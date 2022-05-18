@@ -45,13 +45,13 @@ col_1 = sg.Frame('Manual Control:', [[row_1],
                                      [row_4]], element_justification='center')
 
 col_2 = sg.Frame('Front and back measurement:',
-                 [[sg.Text('Rotation before scan:', pad=((20, 3), 30)), sg.Input(size=(6, 1), default_text='4', key='-N-',
+                 [[sg.Text('Rotation before scan:', pad=((20, 3), 30)), sg.Input(size=(6, 1), default_text='0', key='-N-',
                                                                            background_color='white',
                                                                            text_color='black'),
                    sg.Button('Go', key='-N_SCAN-', size=(30, 3)),
 
                    ],
-                  [sg.Text('Output = ', key='-DIST_ARR-', size=(40, 1))]
+                  [sg.Text('Output = ', key='-DIST_ARR-', size=(70, 1))]
                   ])
 
 layout = [[col_1],
@@ -81,38 +81,52 @@ chosen_freq = 1
 
 class Robot_Params:
 
-    def __init__(self, front_dist, back_dist, rotation, front_direction_dis_arr, back_direction_dis_arr):
+    def __init__(self, front_dist, back_dist, left_dist, right_dist, rotation, front_direction_dis_arr, back_direction_dis_arr, is_front):
         self.front_dist = front_dist
         self.back_dist = back_dist
+        self.left_dist = left_dist
+        self.right_dist = right_dist
         self.rotation = rotation
         self.front_direction_dis_arr = front_direction_dis_arr
         self.back_direction_dis_arr = back_direction_dis_arr
+        self.is_front = is_front
 
 
 
     def measure_handler(self, dis_arr):
-        if self.front_dist != 0 and self.back_dist !=0:
-            print(f"Front distance: {self.front_dist} || Back distance: {self.back_dist}")
+        if self.left_dist != 0 and self.right_dist !=0:
+            # print(f"Front distance: {self.front_dist} || Back distance: {self.back_dist}")
             return
 
         if len(self.front_direction_dis_arr) == 5:  # 5 samples average
             avg_front = sum(self.front_direction_dis_arr) / 5
             avg_back = sum(self.back_direction_dis_arr) / 5
-            self.front_dist = avg_front
-            self.back_dist = avg_back
             self.front_direction_dis_arr = []
             self.back_direction_dis_arr = []
+            if self.is_front:
+                self.front_dist = avg_front
+                print("avg front: ", avg_front)
+                self.back_dist = avg_back
+                move_chassi(0, 0, 90, rot_speed=80) # change 90
+                self.is_front = False
+            else:
+                self.left_dist = avg_front
+                print("avg left: ", avg_front)
+                self.right_dist = avg_back
+                self.is_front = True
             return
         cur_front_dis = dis_arr[0]
         self.front_direction_dis_arr.append(cur_front_dis)
+        print("front_direction_dist_arr len: ", len(self.front_direction_dis_arr))
         cur_back_dis = dis_arr[1]
         self.back_direction_dis_arr.append(cur_back_dis)
 
+
 def front_and_back_measure_distance(n_scan):
-    move_chassi(0, 0, n_scan.rotation, rot_speed=60)
+    move_chassi(0, 0, int(n_scan.rotation), rot_speed=80)
     ep_robot.sensor.sub_distance(freq=5,
                                     callback=n_scan.measure_handler)
-    time.sleep(10)  #sleep time is crucial
+    time.sleep(6)  #sleep time is crucial
     ep_robot.sensor.unsub_distance()
 
 
@@ -137,10 +151,10 @@ def listener():
                         float(values['-XY_SPEED-']),
                         float(values['-ROTATION_SPEED-']))
         elif event == '-N_SCAN-': #fix the n
-            n_scan = Robot_Params(0, 0, values['-N-'], [], [])
+            n_scan = Robot_Params(0, 0, 0, 0, values['-N-'], [], [], True)
             front_and_back_measure_distance(n_scan)
             print(f"finished n_scan")
-            window['-DIST_ARR-'].update(f'Front = {n_scan.front_dist} || Back = {n_scan.back_dist} ')
+            window['-DIST_ARR-'].update(f'Front = {n_scan.front_dist} || Back = {n_scan.back_dist} || Left: {n_scan.left_dist} || Right: {n_scan.right_dist} ')
 
             # window['-DIST-'].update(value=cur_dist) check how to live update
         elif event == '-1hz-':
