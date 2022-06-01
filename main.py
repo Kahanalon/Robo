@@ -1,7 +1,9 @@
 from robomaster import robot
 import PySimpleGUI as sg
 import time
+import os
 import CGALPY_add_dlls
+os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
 import fdmlpy
 import importlib
 

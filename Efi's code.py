@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
-import os
 import importlib
+import os
+import CGALPY_add_dlls
+os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
 import fdmlpy
 import argparse
 
 def readable_dir(prospective_dir):
     # Determine whether the given directory exists and readable
+    parser = argparse.ArgumentParser(description='Self locate.')
     if not os.path.isdir(prospective_dir):
         parser.error("The directory{} does not exist!".format(prospective_dir))
     if os.access(prospective_dir, os.R_OK):
