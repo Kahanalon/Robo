@@ -83,9 +83,15 @@ def main():
         print(pgnwh)
 
         l.init(pgnwh)
-        res = l.query1(FT(1))
-        print(len(res))
+        res = l.query2(FT(2.5), FT(2.5))
+        print((res))
+
+        # res = l.query1(FT(1))
+        # print(type(res[0][0]))
+        # print(f"q1: {res[0][0]}")
         # print(pgns)
+
+
 
         PS = CGALPY.Bso2.Polygon_set_2
         ps = PS()
@@ -104,8 +110,8 @@ def main():
             l.append(pgn)
         ps.insert(l, [])
         arr = ps.arrangement()
-        print(arr.number_of_vertices(),
-              arr.number_of_halfedges(), arr.number_of_faces())
+        # print(arr.number_of_vertices(),
+        #       arr.number_of_halfedges(), arr.number_of_faces())
 
 if __name__ == "__main__":
     main()
