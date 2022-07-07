@@ -13,9 +13,14 @@ from PyQt5.QtWidgets import QFileDialog
 
 from discopygal.gui.gui import GUI
 
+file_location = ''
+first_result = []
+second_result = []
+
 
 class GUITest(GUI):
-    def setupUi(self, path):
+
+    def setupUi(self):
         #########################
         # Setup the Qt UI layout
         #########################
@@ -53,10 +58,10 @@ class GUITest(GUI):
                 self.add_segment(-100, i, 100, i, line_color=QtCore.Qt.gray)
                 self.add_segment(-i, -100, -i, 100, line_color=QtCore.Qt.gray)
                 self.add_segment(-100, -i, 100, -i, line_color=QtCore.Qt.gray)
-                self.add_segment(i+.5, -100, i+.5, 100, line_color=QtCore.Qt.gray, opacity=0.4)
-                self.add_segment(-100, i+.5, 100, i+.5, line_color=QtCore.Qt.gray, opacity=0.4)
-                self.add_segment(-i+.5, -100, -i+.5, 100, line_color=QtCore.Qt.gray, opacity=0.4)
-                self.add_segment(-100, -i+.5, 100, -i+.5, line_color=QtCore.Qt.gray, opacity=0.4)
+                self.add_segment(i + .5, -100, i + .5, 100, line_color=QtCore.Qt.gray, opacity=0.4)
+                self.add_segment(-100, i + .5, 100, i + .5, line_color=QtCore.Qt.gray, opacity=0.4)
+                self.add_segment(-i + .5, -100, -i + .5, 100, line_color=QtCore.Qt.gray, opacity=0.4)
+                self.add_segment(-100, -i + .5, 100, -i + .5, line_color=QtCore.Qt.gray, opacity=0.4)
 
             self.add_segment(0, -100, 0, 100)
             self.add_segment(-100, 0, 100, 0)
@@ -71,6 +76,12 @@ class GUITest(GUI):
                                  line_color)
             self.add_segment(int(points[0][0]), int(points[0][1]), int(points[n - 1][0]), int(points[n - 1][1]),
                              line_color)
+
+        def create_line(points, line_color):
+            n = len(points)
+            for i in range(1, n):
+                self.add_segment(float(str(points[i - 1][0])), float(str(points[i - 1][1])), float(str(points[i][0])), float(str(points[i][1])),
+                                 line_color)
 
         def create_room(path, n):
             create_grid(n)
@@ -98,25 +109,28 @@ class GUITest(GUI):
                 if len(ans[2]) == 0:
                     continue
                 if len(ans[2]) == 1:
-                    self.add_disc(0.1, ans[2][0], ans[2][1])
+                    self.add_disc(0.1, ans[2][0], ans[2][1], line_color= line_color)
                 for p in ans[2]:
-                    points.append(p[0], p[1])
-                create_poly(points, line_color)
+                    points.append([p[0][0], p[0][1]])
+                create_line(points, line_color=line_color)
 
 
+        create_room(file_location, 100)
+        draw_answer(first_result, QtCore.Qt.blue)
+        draw_answer(second_result, QtCore.Qt.green)
 
-        def show_answer(path, res1, res2):
-            app = QtWidgets.QApplication(sys.argv)
-            gui = GUITest()
-            gui.set_program_name("RMP GUI Zoo")
-            gui.mainWindow.show()
-            create_room(path)
-            draw_answer(res1, QtCore.Qt.blue)
-            draw_answer(res2, QtCore.Qt.green)
-            sys.exit(app.exec_())
 
-        create_room(path, 100)
-
+def run_gui(path, first_res, second_res):
+    global file_location, first_result, second_result
+    file_location = path
+    first_result = first_res
+    second_result = second_res
+    print(first_result, second_result)
+    app = QtWidgets.QApplication(sys.argv)
+    gui = GUITest()
+    gui.set_program_name("RMP GUI Zoo")
+    gui.mainWindow.show()
+    sys.exit(app.exec_())
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
@@ -124,9 +138,4 @@ if __name__ == "__main__":
     gui.set_program_name("RMP GUI Zoo")
     gui.mainWindow.show()
     sys.exit(app.exec_())
-else:
-    app = QtWidgets.QApplication(sys.argv)
-    gui = GUITest()
-    gui.set_program_name("RMP GUI Zoo")
-    gui.mainWindow.show()
-    sys.exit(app.exec_())
+
