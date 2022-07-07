@@ -3,18 +3,10 @@
 import importlib
 import os
 import CGALPY_add_dlls
-
 os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
 import fdmlpy
 import argparse
 import CGALPY_kerEpec_aos2ArrSeg_bso2_pol2 as CGALPY
-import basic_gui_example
-from discopygal.gui.gui import GUI
-
-front_first = 1
-back_first = 2
-front_second = 3
-back_second = 2
 
 
 def readable_dir(prospective_dir):
@@ -93,11 +85,9 @@ def main():
         print(pgnwh)
 
         l.init(pgnwh)
-        res_first = l.query2(FT(front_first), FT(back_first))
-        res_second = l.query2(FT(front_second), FT(back_second))
-        gui = basic_gui_example.GUITest().setupUi(filename)
+        res = l.query2(FT(2.5), FT(2.5))
+        print((res))
 
-        # basic_gui_example.GUITest.(filename,res_first,res_second)
         # res = l.query1(FT(1))
         # print(type(res[0][0]))
         # print(f"q1: {res[0][0]}")
