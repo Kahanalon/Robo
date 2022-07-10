@@ -109,9 +109,12 @@ class GUITest(GUI):
                 if len(ans[2]) == 0:
                     continue
                 if len(ans[2]) == 1:
-                    self.add_disc(0.1, ans[2][0], ans[2][1], line_color= line_color)
+                    # self.add_disc(0.1, ans[2][0], ans[2][1], line_color= line_color)
+                    continue
                 for p in ans[2]:
                     points.append([p[0][0], p[0][1]])
+                p = ans[2][len(ans[2])-1]
+                points.append([p[1][0], p[1][1]])
                 create_line(points, line_color=line_color)
 
 

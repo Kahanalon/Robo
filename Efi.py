@@ -11,13 +11,10 @@ import fdmlpy
 import argparse
 import CGALPY_kerEpec_aos2ArrSeg_bso2_pol2 as CGALPY
 
-from discopygal.gui.gui import GUI
-
-
-front_first = 1
-back_first = 7
-front_second = 6
-back_second = 2
+front_first = 0
+back_first = 0
+front_second = 0
+back_second = 0
 
 
 def readable_dir(prospective_dir):
@@ -31,8 +28,9 @@ def readable_dir(prospective_dir):
         parser.error(
             "The directory {} is not a readable dir!".format(prospective_dir))
 
+
 def read_polygon(inp, library):
-    #CGALPY = importlib.import_module(library)
+    # CGALPY = importlib.import_module(library)
     Polygon = CGALPY.Pol2.Polygon_2
     pgn = Polygon()
     Ker = fdmlpy.Ker
@@ -45,6 +43,7 @@ def read_polygon(inp, library):
         pgn.push_back(p)
     return pgn
 
+
 def read_polygon_with_holes(inp, library):
     # CGALPY = importlib.import_module(library)
     Polygon_with_holes_2 = CGALPY.Pol2.Polygon_with_holes_2
@@ -54,6 +53,7 @@ def read_polygon_with_holes(inp, library):
     for i in range(n):
         pgnwh.add_hole(read_polygon(inp, library))
     return pgnwh
+
 
 def main():
     parser = argparse.ArgumentParser(description='Self locate.')
@@ -81,7 +81,6 @@ def main():
     print('Library name:', lib)
     # CGALPY = importlib.import_module(lib)
 
-
     Locator = fdmlpy.Locator
     Ker = fdmlpy.Ker
     Point = Ker.Point_2
@@ -99,14 +98,11 @@ def main():
         res_second = l.query2(FT(front_second), FT(back_second))
         gui = basic_gui_example.run_gui(filename, res_first, res_second)
 
-
         # basic_gui_example.GUITest.(filename,res_first,res_second)
         # res = l.query1(FT(1))
         # print(type(res[0][0]))
         # print(f"q1: {res[0][0]}")
         # print(pgns)
-
-
 
         PS = CGALPY.Bso2.Polygon_set_2
         ps = PS()
@@ -127,6 +123,16 @@ def main():
         arr = ps.arrangement()
         # print(arr.number_of_vertices(),
         #       arr.number_of_halfedges(), arr.number_of_faces())
+
+
+def run_efi(front, back, left, right):
+    global front_first, back_first, front_second, back_second
+    front_first = front
+    back_first = back
+    front_second = left  # check rotation direction
+    back_second = right
+    main()
+
 
 if __name__ == "__main__":
     main()

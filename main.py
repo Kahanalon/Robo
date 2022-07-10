@@ -6,6 +6,7 @@ import CGALPY_add_dlls
 os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
 import fdmlpy
 import importlib
+import Efi
 
 """
 Basic GUI for Robomaster 
@@ -127,20 +128,6 @@ class Robot_Params:
         self.back_direction_dis_arr.append(cur_back_dis)
 
 
-def read_polygon(inp, library):
-    CGALPY = importlib.import_module(library)
-    Polygon = CGALPY.Pol2.Polygon_2
-    pgn = Polygon()
-    Ker = fdmlpy.Ker
-    Point = Ker.Point_2
-    n = int(inp.readline())
-    for i in range(n):
-        line = inp.readline()
-        lst = line.split()
-        p = Point(float(lst[0]), float(lst[1]))
-        pgn.push_back(p)
-    return pgn
-
 
 def front_and_back_measure_distance(n_scan):
     move_chassi(0, 0, int(n_scan.rotation), rot_speed=80)
@@ -173,7 +160,7 @@ def listener():
             print(f"finished n_scan")
             window['-DIST_ARR-'].update(
                 f'Front = {n_scan.front_dist} || Back = {n_scan.back_dist} || Left: {n_scan.left_dist} || Right: {n_scan.right_dist} ')
-
+            Efi.run_efi(n_scan.front_dist/1000, n_scan.back_dist/1000, n_scan.left_dist/1000, n_scan.right_dist/1000)
             # window['-DIST-'].update(value=cur_dist) check how to live update
         elif event == '-1hz-':
             chosen_freq = 1
