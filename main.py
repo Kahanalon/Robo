@@ -88,20 +88,26 @@ chosen_freq = 1
 
 class Robot_Params:
 
-    def __init__(self, front_dist, back_dist, left_dist, right_dist, rotation, front_direction_dis_arr,
-                 back_direction_dis_arr, is_front):
-        self.front_dist = front_dist
-        self.back_dist = back_dist
-        self.left_dist = left_dist
-        self.right_dist = right_dist
+    def __init__(self, front_dist, back_dist, left_dist, right_dist,front_dist2, back_dist2, left_dist2, right_dist2, rotation, front_direction_dis_arr,
+                 back_direction_dis_arr,dig1_direction_dis_arr,dig2_direction_dis_arr, is_front):
+        self.dis0 = front_dist
+        self.dis180 = back_dist
+        self.dis270 = left_dist
+        self.dis90 = right_dist
+        self.dis45 = front_dist2
+        self.dis225 = back_dist2
+        self.dis135 = left_dist2
+        self.dis315 = right_dist2
         self.rotation = rotation
         self.front_direction_dis_arr = front_direction_dis_arr
         self.back_direction_dis_arr = back_direction_dis_arr
+        self.dig1_direction_dis_arr = dig1_direction_dis_arr
+        self.dig2_direction_dis_arr = dig2_direction_dis_arr
         self.is_front = is_front
 
     def measure_handler(self, dis_arr):
-        if self.left_dist != 0 and self.right_dist != 0:
-            # print(f"Front distance: {self.front_dist} || Back distance: {self.back_dist}")
+        if self.dis270 != 0 and self.dis90 != 0:
+            # print(f"Front distance: {self.dis0} || Back distance: {self.dis180}")
             return
 
         if len(self.front_direction_dis_arr) == 5:  # 5 samples average
@@ -110,15 +116,15 @@ class Robot_Params:
             self.front_direction_dis_arr = []
             self.back_direction_dis_arr = []
             if self.is_front:
-                self.front_dist = avg_front
+                self.dis0 = avg_front
                 print("avg front: ", avg_front)
-                self.back_dist = avg_back
+                self.dis180 = avg_back
                 move_chassi(0, 0, 90, rot_speed=80)  # change 90
                 self.is_front = False
             else:
-                self.left_dist = avg_front
+                self.dis270 = avg_front
                 print("avg left: ", avg_front)
-                self.right_dist = avg_back
+                self.dis90 = avg_back
                 self.is_front = True
             return
         cur_front_dis = dis_arr[0]
@@ -155,12 +161,12 @@ def listener():
                         float(values['-XY_SPEED-']),
                         float(values['-ROTATION_SPEED-']))
         elif event == '-N_SCAN-':  # fix the n
-            n_scan = Robot_Params(0, 0, 0, 0, values['-N-'], [], [], True)
+            n_scan = Robot_Params(0, 0, 0, 0, 0, 0, 0, 0, values['-N-'], [], [], [], [], True)
             front_and_back_measure_distance(n_scan)
             print(f"finished n_scan")
             window['-DIST_ARR-'].update(
-                f'Front = {n_scan.front_dist} || Back = {n_scan.back_dist} || Left: {n_scan.left_dist} || Right: {n_scan.right_dist} ')
-            Efi.run_efi(n_scan.front_dist/1000, n_scan.back_dist/1000, n_scan.left_dist/1000, n_scan.right_dist/1000)
+                f'Front = {n_scan.dis0} || Back = {n_scan.dis180} || Left: {n_scan.dis270} || Right: {n_scan.dis90} ')
+            Efi.run_efi(n_scan.dis0/1000, n_scan.dis180/1000, n_scan.dis270/1000, n_scan.dis90/1000)
             # window['-DIST-'].update(value=cur_dist) check how to live update
         elif event == '-1hz-':
             chosen_freq = 1

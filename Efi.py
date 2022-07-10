@@ -3,7 +3,7 @@
 import importlib
 import os
 import CGALPY_add_dlls
-
+import math
 import basic_gui_example
 
 os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
@@ -11,10 +11,14 @@ import fdmlpy
 import argparse
 import CGALPY_kerEpec_aos2ArrSeg_bso2_pol2 as CGALPY
 
-front_first = 0
-back_first = 0
-front_second = 0
-back_second = 0
+front_first = 1
+back_first = 7
+front_second = 2
+back_second = 6
+front_third = math.sqrt(2)
+back_third = 2*math.sqrt(2)
+front_fourth = math.sqrt(2)
+back_fourth = 2*math.sqrt(2)
 
 
 def readable_dir(prospective_dir):
@@ -96,7 +100,9 @@ def main():
         l.init(pgnwh)
         res_first = l.query2(FT(front_first), FT(back_first))
         res_second = l.query2(FT(front_second), FT(back_second))
-        gui = basic_gui_example.run_gui(filename, res_first, res_second)
+        res_third = l.query2(FT(front_third), FT(back_third))
+        res_fourth = l.query2(FT(front_fourth), FT(back_fourth))
+        gui = basic_gui_example.run_gui(filename, res_first, res_second, res_third, res_fourth)
 
         # basic_gui_example.GUITest.(filename,res_first,res_second)
         # res = l.query1(FT(1))
@@ -125,12 +131,17 @@ def main():
         #       arr.number_of_halfedges(), arr.number_of_faces())
 
 
-def run_efi(front, back, left, right):
-    global front_first, back_first, front_second, back_second
-    front_first = front
-    back_first = back
-    front_second = left  # check rotation direction
-    back_second = right
+def run_efi(dis0, dis180, dis90, dis270, dis45, dis225, dis135, dis315):
+    global front_first, back_first, front_second, back_second, front_third, back_third, front_fourth, back_fourth
+    front_first = dis0
+    back_first = dis180
+    front_second = dis90  # check rotation direction
+    back_second = dis270
+    front_third = dis45
+    back_third = dis225
+    front_fourth = dis135
+    front_fourth = dis315
+
     main()
 
 
