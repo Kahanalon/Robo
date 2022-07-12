@@ -14,10 +14,7 @@ from PyQt5.QtWidgets import QFileDialog
 from discopygal.gui.gui import GUI
 
 file_location = ''
-first_result = []
-second_result = []
-third_result = []
-fourth_result = []
+queries_results = []
 
 
 class GUITest(GUI):
@@ -74,9 +71,9 @@ class GUITest(GUI):
         def create_poly(points, line_color):
             n = len(points)
             for i in range(1, n):
-                self.add_segment(int(points[i - 1][0]), int(points[i - 1][1]), int(points[i][0]), int(points[i][1]),
+                self.add_segment(float(points[i - 1][0]), float(points[i - 1][1]), float(points[i][0]), float(points[i][1]),
                                  line_color)
-            self.add_segment(int(points[0][0]), int(points[0][1]), int(points[n - 1][0]), int(points[n - 1][1]),
+            self.add_segment(float(points[0][0]), float(points[0][1]), float(points[n - 1][0]), float(points[n - 1][1]),
                              line_color)
 
         def create_line(points, line_color):
@@ -121,19 +118,19 @@ class GUITest(GUI):
 
 
         create_room(file_location, 100)
-        draw_answer(first_result, QtCore.Qt.blue)
-        draw_answer(second_result, QtCore.Qt.green)
-        draw_answer(third_result, QtCore.Qt.darkCyan)
-        draw_answer(fourth_result, QtCore.Qt.yellow)
+        colors = [QtCore.Qt.blue, QtCore.Qt.green, QtCore.Qt.darkCyan, QtCore.Qt.yellow]
+        for i in range(len(queries_results)):
+            draw_answer(queries_results[i], colors[i])
+        # draw_answer(first_result, QtCore.Qt.blue)
+        # draw_answer(second_result, QtCore.Qt.green)
+        # draw_answer(third_result, QtCore.Qt.darkCyan)
+        # draw_answer(fourth_result, QtCore.Qt.yellow)
 
 
-def run_gui(path, first_res, second_res, third_res, fourth_res):
-    global file_location, first_result, second_result, third_result, fourth_result
+def run_gui(path, query_results):
+    global queries_results, file_location
     file_location = path
-    first_result = first_res
-    second_result = second_res
-    third_result = third_res
-    fourth_result = fourth_res
+    queries_results = query_results
     app = QtWidgets.QApplication(sys.argv)
     gui = GUITest()
     gui.set_program_name("RMP GUI Zoo")

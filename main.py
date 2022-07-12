@@ -39,7 +39,7 @@ row_3 = sg.Frame('Sensor Freq(Hz):',
                    sg.Radio('10', 'Hz', key='-10hz-', size=(3, 1), enable_events=True),
                    sg.Radio('20', 'Hz', key='-20hz-', size=(3, 1), enable_events=True),
                    sg.Radio('50', 'Hz', key='-50hz-', size=(3, 1), enable_events=True),
-                   sg.Text('Distance = ', key='-DIST-', size=(15, 1))]], )  # make in cm
+                   sg.Text('Distance(mm) = ', key='-DIST-', size=(15, 1))]], )  # make in cm
 
 row_4 = sg.Frame('', [[sg.Button('Go', key='-GO-', size=(10, 3)), sg.Button('Scan', key='-SCAN-', size=(10, 3))]],
                  border_width=0)
@@ -88,58 +88,40 @@ chosen_freq = 1
 
 class Robot_Params:
 
-    def __init__(self, front_dist, back_dist, left_dist, right_dist,front_dist2, back_dist2, left_dist2, right_dist2, rotation, front_direction_dis_arr,
-                 back_direction_dis_arr,dig1_direction_dis_arr,dig2_direction_dis_arr, is_front):
-        self.dis0 = front_dist
-        self.dis180 = back_dist
-        self.dis270 = left_dist
-        self.dis90 = right_dist
-        self.dis45 = front_dist2
-        self.dis225 = back_dist2
-        self.dis135 = left_dist2
-        self.dis315 = right_dist2
-        self.rotation = rotation
+    def __init__(self, front_direction_dis_arr, back_direction_dis_arr, nway_dist_arr, n_way, cur_dist, cur_avg_dist):
         self.front_direction_dis_arr = front_direction_dis_arr
-        self.back_direction_dis_arr = back_direction_dis_arr
-        self.dig1_direction_dis_arr = dig1_direction_dis_arr
-        self.dig2_direction_dis_arr = dig2_direction_dis_arr
-        self.is_front = is_front
+        self.back_direction_dis_arr  = back_direction_dis_arr
+        self.nway_dist_arr = nway_dist_arr
+        self.n_way = n_way
+        self.cur_dist = cur_dist
+        self.cur_avg_dist = cur_avg_dist
 
     def measure_handler(self, dis_arr):
-        if self.dis270 != 0 and self.dis90 != 0:
-            # print(f"Front distance: {self.dis0} || Back distance: {self.dis180}")
+        if len(self.nway_dist_arr) == int(self.n_way):  # finished n-way measure
+            print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             return
 
         if len(self.front_direction_dis_arr) == 5:  # 5 samples average
-            avg_front = sum(self.front_direction_dis_arr) / 5
-            avg_back = sum(self.back_direction_dis_arr) / 5
+            avg_front = sum(self.front_direction_dis_arr) / len(self.front_direction_dis_arr)
+            avg_back = sum(self.back_direction_dis_arr) / len(self.back_direction_dis_arr)
+            self.nway_dist_arr.append([avg_front, avg_back])
+            print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             self.front_direction_dis_arr = []
             self.back_direction_dis_arr = []
-            if self.is_front:
-                self.dis0 = avg_front
-                print("avg front: ", avg_front)
-                self.dis180 = avg_back
-                move_chassi(0, 0, 90, rot_speed=80)  # change 90
-                self.is_front = False
-            else:
-                self.dis270 = avg_front
-                print("avg left: ", avg_front)
-                self.dis90 = avg_back
-                self.is_front = True
+            move_chassi(0, 0, 366/int(self.n_way), rot_speed=80) # change +1 in relation to 6/
             return
-        cur_front_dis = dis_arr[0]
-        self.front_direction_dis_arr.append(cur_front_dis)
-        print("front_direction_dist_arr len: ", len(self.front_direction_dis_arr))
-        cur_back_dis = dis_arr[1]
+        cur_dist = dis_arr[0]/1000
+        self.front_direction_dis_arr.append(cur_dist)
+        cur_back_dis = dis_arr[1]/1000
         self.back_direction_dis_arr.append(cur_back_dis)
+        print("one_direction_dist_arr: ", self.front_direction_dis_arr)
 
 
 
-def front_and_back_measure_distance(n_scan):
-    move_chassi(0, 0, int(n_scan.rotation), rot_speed=80)
+def nway_measure_distance(n_scan):
     ep_robot.sensor.sub_distance(freq=5,
                                  callback=n_scan.measure_handler)
-    time.sleep(6)  # sleep time is crucial
+    time.sleep(2.5 * int(n_scan.n_way))  #sleep time is crucial
     ep_robot.sensor.unsub_distance()
 
 
@@ -161,12 +143,11 @@ def listener():
                         float(values['-XY_SPEED-']),
                         float(values['-ROTATION_SPEED-']))
         elif event == '-N_SCAN-':  # fix the n
-            n_scan = Robot_Params(0, 0, 0, 0, 0, 0, 0, 0, values['-N-'], [], [], [], [], True)
-            front_and_back_measure_distance(n_scan)
+            n_scan = Robot_Params([], [], values['-N-'], 0, 0)
+            nway_measure_distance(n_scan)
             print(f"finished n_scan")
-            window['-DIST_ARR-'].update(
-                f'Front = {n_scan.dis0} || Back = {n_scan.dis180} || Left: {n_scan.dis270} || Right: {n_scan.dis90} ')
-            Efi.run_efi(n_scan.dis0/1000, n_scan.dis180/1000, n_scan.dis270/1000, n_scan.dis90/1000)
+            window['-DIST_ARR-'].update(f'Output = {n_scan.nway_dist_arr}')
+            Efi.run_efi(n_scan.nway_dist_arr)
             # window['-DIST-'].update(value=cur_dist) check how to live update
         elif event == '-1hz-':
             chosen_freq = 1
