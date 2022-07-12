@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 import time
 import os
 import CGALPY_add_dlls
+
 os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
 import fdmlpy
 import importlib
@@ -50,7 +51,7 @@ col_1 = sg.Frame('Manual Control:', [[row_1],
                                      [row_4]], element_justification='center')
 
 col_2 = sg.Frame('Front and back measurement:',
-                 [[sg.Text('Rotation before scan:', pad=((20, 3), 30)),
+                 [[sg.Text('N-way:', pad=((20, 3), 30)),
                    sg.Input(size=(6, 1), default_text='0', key='-N-',
                             background_color='white',
                             text_color='black'),
@@ -90,7 +91,7 @@ class Robot_Params:
 
     def __init__(self, front_direction_dis_arr, back_direction_dis_arr, nway_dist_arr, n_way, cur_dist, cur_avg_dist):
         self.front_direction_dis_arr = front_direction_dis_arr
-        self.back_direction_dis_arr  = back_direction_dis_arr
+        self.back_direction_dis_arr = back_direction_dis_arr
         self.nway_dist_arr = nway_dist_arr
         self.n_way = n_way
         self.cur_dist = cur_dist
@@ -108,20 +109,19 @@ class Robot_Params:
             print(f"{self.n_way}-way distance array: ", self.nway_dist_arr)
             self.front_direction_dis_arr = []
             self.back_direction_dis_arr = []
-            move_chassi(0, 0, 366/int(self.n_way), rot_speed=80) # change +1 in relation to 6/
+            move_chassi(0, 0, 183 / int(self.n_way), rot_speed=80)  # change +1 in relation to 6/
             return
-        cur_dist = dis_arr[0]/1000
+        cur_dist = (dis_arr[0] + 80) / 1000  # front sensor 8cm from center
         self.front_direction_dis_arr.append(cur_dist)
-        cur_back_dis = dis_arr[1]/1000
+        cur_back_dis = (dis_arr[1] + 125) / 1000  # back sensor 8cm from center
         self.back_direction_dis_arr.append(cur_back_dis)
         print("one_direction_dist_arr: ", self.front_direction_dis_arr)
-
 
 
 def nway_measure_distance(n_scan):
     ep_robot.sensor.sub_distance(freq=5,
                                  callback=n_scan.measure_handler)
-    time.sleep(2.5 * int(n_scan.n_way))  #sleep time is crucial
+    time.sleep(2.5 * int(n_scan.n_way))  # sleep time is crucial
     ep_robot.sensor.unsub_distance()
 
 
@@ -143,11 +143,11 @@ def listener():
                         float(values['-XY_SPEED-']),
                         float(values['-ROTATION_SPEED-']))
         elif event == '-N_SCAN-':  # fix the n
-            n_scan = Robot_Params([], [], values['-N-'], 0, 0)
+            n_scan = Robot_Params([], [], [], values['-N-'], 0, 0)
             nway_measure_distance(n_scan)
             print(f"finished n_scan")
             window['-DIST_ARR-'].update(f'Output = {n_scan.nway_dist_arr}')
-            Efi.run_efi(n_scan.nway_dist_arr)
+            #Efi.run_efi(n_scan.nway_dist_arr)
             # window['-DIST-'].update(value=cur_dist) check how to live update
         elif event == '-1hz-':
             chosen_freq = 1

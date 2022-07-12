@@ -11,7 +11,7 @@ import fdmlpy
 import argparse
 import CGALPY_kerEpec_aos2ArrSeg_bso2_pol2 as CGALPY
 
-distance_measures = [[1,7], [2,6], [math.sqrt(2), 2*math.sqrt(2)], [math.sqrt(2), 2*math.sqrt(2)]]
+distance_measures = [[3.95,1.5], [1.9,1.1]]
 
 
 def readable_dir(prospective_dir):
@@ -92,7 +92,7 @@ def main():
 
         l.init(pgnwh)
         queries_results = []
-        for i in range(0, len(distance_measures)-1 ):
+        for i in range(len(distance_measures)):
             queries_results.append(l.query2(FT(distance_measures[i][0]), FT(distance_measures[i][1])))
         gui = basic_gui_example.run_gui(filename, queries_results)
 
@@ -102,23 +102,23 @@ def main():
         # print(f"q1: {res[0][0]}")
         # print(pgns)
 
-        PS = CGALPY.Bso2.Polygon_set_2
-        ps = PS()
-        l = []
-        for r in res:
-            pgn = Polygon()
-            it = r[0].vertices()
-            last = next(it)
-            first = last
-            for p in it:
-                if p != last:
-                    pgn.push_back(p)
-                    last = p
-                if first != last:
-                    pgn.push_back(first)
-            l.append(pgn)
-        ps.insert(l, [])
-        arr = ps.arrangement()
+        # PS = CGALPY.Bso2.Polygon_set_2
+        # ps = PS()
+        # l = []
+        # for r in res:
+        #     pgn = Polygon()
+        #     it = r[0].vertices()
+        #     last = next(it)
+        #     first = last
+        #     for p in it:
+        #         if p != last:
+        #             pgn.push_back(p)
+        #             last = p
+        #         if first != last:
+        #             pgn.push_back(first)
+        #     l.append(pgn)
+        # ps.insert(l, [])
+        # arr = ps.arrangement()
         # print(arr.number_of_vertices(),
         #       arr.number_of_halfedges(), arr.number_of_faces())
 
