@@ -11,7 +11,7 @@ import fdmlpy
 import argparse
 import CGALPY_kerEpec_aos2ArrSeg_bso2_pol2 as CGALPY
 
-distance_measures = [[3.95,1.5], [1.9,1.1]]
+distance_measures = [[1.6,3.8], [1.9,1.1]]
 
 
 def readable_dir(prospective_dir):
