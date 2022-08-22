@@ -11,7 +11,7 @@ import fdmlpy
 import argparse
 import CGALPY_kerEpec_aos2ArrSeg_bso2_pol2 as CGALPY
 
-distance_measures = [[1.6,3.8], [1.9,1.1]]
+distance_measures = [[1.6,3.96], [1.9,1.1]]
 
 
 def readable_dir(prospective_dir):
@@ -28,7 +28,7 @@ def readable_dir(prospective_dir):
 
 def read_polygon(inp, library):
     # CGALPY = importlib.import_module(library)
-    Polygon = CGALPY.Pol2.Polygon_2
+    Polygon = fdmlpy.Pol2.Polygon_2
     pgn = Polygon()
     Ker = fdmlpy.Ker
     Point = Ker.Point_2

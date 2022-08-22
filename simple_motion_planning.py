@@ -1,9 +1,6 @@
 import json
-import CGALPY_add_dlls
-import CGALPY_kerEpec_aos2ArrSeg_bso2_pol2 as CGALPY
 
 from discopygal.bindings import *
-
 from discopygal.solvers import PathPoint, Scene, RobotDisc, ObstaclePolygon
 from discopygal.solvers.rrt import dRRT
 
@@ -87,8 +84,8 @@ if __name__ == "__main__":
     scene.add_obstacle(bottom_wall)
 
     # Export the scene to file
-    with open('examples/scenes/simple_motion_planning_scene.json', 'w') as fp:
-        json.dump(scene.to_dict(), fp)
+    # with open('examples/scenes/simple_motion_planning_scene.json', 'w') as fp:
+    #     json.dump(scene.to_dict(), fp)
 
     # "Solve" the scene (find paths for the robots)
     solver = dRRT(num_landmarks=100, prm_num_landmarks=200, prm_k=15)
