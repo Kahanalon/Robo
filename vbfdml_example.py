@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 
 import vbfdml
 
-N = 70
+N = 70  # grid resolution - more accurate, more time.
 USE_GPU = True
-NUM_MEASUREMENTS = 4 # Set to 3 to see more predictions
+NUM_MEASUREMENTS = 3  # Set to 3 to see more predictions
+
 
 def run_vbfdml(poly, be, ms, n):
     # Single measurements
@@ -22,6 +23,7 @@ def run_vbfdml(poly, be, ms, n):
     isect = vbfdml.polygon_filter(poly, be, isect)
     return vbfdml.predict(isect, be)
 
+
 def visualize_polygon(poly: vbfdml.Polygon2D):
     """
     Add a polygon plot to a given matplotlib figure
@@ -36,6 +38,7 @@ def visualize_polygon(poly: vbfdml.Polygon2D):
 
     plt.plot(X, Y)
 
+
 def visualize_prediction(pred: vbfdml.Prediction, arrow_size=0.075):
     """
     Add prediction arrow to a given matplotlib figure
@@ -47,24 +50,23 @@ def visualize_prediction(pred: vbfdml.Prediction, arrow_size=0.075):
     plt.arrow(x, y, dx, dy, head_width=arrow_size)
 
 
-
 if __name__ == "__main__":
     # Load the polygon of Room 446
     poly = vbfdml.Polygon2D()
-    poly.load_from_file('resources/lab.poly')
+    poly.load_from_file('lab.poly')
 
     # Set the extent of the room (always the angle range > 2pi)
-    be = vbfdml.BoxExtent3(
-        7, 5, 2.1 * math.pi, # extent
-        1.5, 0, 0 # offset
+    be = vbfdml.BoxExtent3(  # __init__(width: float, height: float, depth: float, dx: float, dy: float, dz: float)
+        7, 5, 2.1 * math.pi,  # extent
+        1.5, 0, 0  # offset
     )
 
     # Generate four measurements
-    angles = [0.0, math.pi / 2, math.pi, 3 * math.pi / 2]
-    ds = [1,1,1,3] # Measurements returned from the robot
+    angles = [0.0, math.pi / 2, math.pi, 3 * math.pi / 2]  # angles and ds need to index-match
+    ds = [1, 1, 1, 3]  # Measurements returned from the robot
     ms = []
     for i in range(NUM_MEASUREMENTS):
-        ms.append(vbfdml.Measurement(ds[i], angles[i]))
+        ms.append(vbfdml.Measurement(ds[i], angles[i]))  # A single measurement the robot did. Angles are given in radians.
 
     # Get a list of predictions
     preds = run_vbfdml(poly, be, ms, N)
@@ -73,4 +75,4 @@ if __name__ == "__main__":
     visualize_polygon(poly)
     for pred in preds:
         visualize_prediction(pred)
-    plt.show()   
+    plt.show()
