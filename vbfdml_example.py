@@ -5,7 +5,7 @@ import vbfdml
 
 N = 70
 USE_GPU = True
-NUM_MEASUREMENTS = 3 # Set to 3 to see more predictions3
+NUM_MEASUREMENTS = 4 # Set to 3 to see more predictions
 
 def run_vbfdml(poly, be, ms, n):
     # Single measurements
@@ -17,7 +17,7 @@ def run_vbfdml(poly, be, ms, n):
     isect = vbs[0]
     for vb in vbs[1:]:
         isect = vbfdml.do_intersect(isect, vb, n, False, USE_GPU)
-    
+
     # Apply polygon filter and predict
     isect = vbfdml.polygon_filter(poly, be, isect)
     return vbfdml.predict(isect, be)
@@ -44,7 +44,7 @@ def visualize_prediction(pred: vbfdml.Prediction, arrow_size=0.075):
     y = pred.y
     dx = arrow_size * math.cos(pred.theta)
     dy = arrow_size * math.sin(pred.theta)
-    plt.arrow(x, y, dx, dy, head_width=arrow_size) 
+    plt.arrow(x, y, dx, dy, head_width=arrow_size)
 
 
 
