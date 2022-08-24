@@ -7,7 +7,7 @@ import CGALPY_add_dlls
 os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
 import fdmlpy
 import importlib
-import Efi
+import vbfdml_example
 
 """
 Basic GUI for Robomaster 
@@ -52,7 +52,7 @@ col_1 = sg.Frame('Manual Control:', [[row_1],
 
 col_2 = sg.Frame('Front and back measurement:',
                  [[sg.Text('N-way:', pad=((20, 3), 30)),
-                   sg.Input(size=(6, 1), default_text='0', key='-N-',
+                   sg.Input(size=(6, 1), default_text='2', key='-N-',
                             background_color='white',
                             text_color='black'),
                    sg.Button('Go', key='-N_SCAN-', size=(30, 3)),
@@ -146,9 +146,17 @@ def listener():
             n_scan = Robot_Params([], [], [], values['-N-'], 0, 0)
             nway_measure_distance(n_scan)
             print(f"finished n_scan")
-            window['-DIST_ARR-'].update(f'Output = {n_scan.nway_dist_arr}')
-            #Efi.run_efi(n_scan.nway_dist_arr)
-            # window['-DIST-'].update(value=cur_dist) check how to live update
+            flat_dist_list = [round(dis, 2) for sublist in n_scan.nway_dist_arr for dis in sublist]
+            window['-DIST_ARR-'].update(f'Output = {flat_dist_list}')
+            print(flat_dist_list)
+            preds = vbfdml_example.find_location(flat_dist_list)
+            for pred in preds:
+                print(pred.x, pred.y, pred.theta)
+            print("next phase")
+            ep_chassis.move(0.5, 0, 0, 0.5, 0).wait_for_completed()
+            # x,y,angel = vbfdml_example.find_location(flat_dist_list)
+            # moves = simple_motion_planning.zabi(x,y)
+            # robot_move(moves)
         elif event == '-1hz-':
             chosen_freq = 1
         elif event == '-5hz-':
