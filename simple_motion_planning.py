@@ -4,6 +4,7 @@ from discopygal.bindings import *
 from discopygal.solvers import PathPoint, Scene, RobotDisc, ObstaclePolygon
 from discopygal.solvers.rrt import dRRT
 
+
 X = 0
 Y = 0
 
@@ -30,7 +31,7 @@ def main(x,y):
     roboti = RobotDisc(
         radius=FT(0.5),
         start=Point_2(FT(x), FT(y)),
-        end=Point_2(FT(3.0), FT(0.0)))
+        end=Point_2(FT(3.0), FT(3.0)))
     scene.add_robot(roboti)
 
 
@@ -95,6 +96,7 @@ def main(x,y):
     for i, (robot, path) in enumerate(path_collection.paths.items()):
         for point in path.points:
             result.append(point.location)
+    print(result)
     return result
 
 def find_path(x,y):
@@ -107,6 +109,7 @@ def find_path(x,y):
         x_move = path[i+1][0] - path[i][0]
         y_move = path[i+1][1] - path[i][1]
         moves.append([x_move,y_move])
+    print(moves)
     return moves
 
-find_path(-3,0)
+find_path(3,1.5)
