@@ -4,7 +4,11 @@ from discopygal.bindings import *
 from discopygal.solvers import PathPoint, Scene, RobotDisc, ObstaclePolygon
 from discopygal.solvers.rrt import dRRT
 
-if __name__ == "__main__":
+X = 0
+Y = 0
+
+
+def main(x,y):
     scene = Scene()
 
     # Illustration of the scene: 
@@ -23,16 +27,12 @@ if __name__ == "__main__":
     ###############################
 
     # Add disc robot on the left that wants to go to the right
-    left_robot = RobotDisc(
-        radius=FT(1.0), 
-        start=Point_2(FT(-3.0), FT(0.0)),
+    roboti = RobotDisc(
+        radius=FT(0.5),
+        start=Point_2(FT(x), FT(y)),
         end=Point_2(FT(3.0), FT(0.0)))
-    right_robot = RobotDisc(
-        radius=FT(1.0), 
-        start=Point_2(FT(3.0), FT(0.0)),
-        end=Point_2(FT(-3.0), FT(0.0)))
-    scene.add_robot(left_robot)
-    scene.add_robot(right_robot)
+    scene.add_robot(roboti)
+
 
     # Add obstacle in the middle
     middle_obstacle = ObstaclePolygon(
@@ -91,8 +91,22 @@ if __name__ == "__main__":
     solver = dRRT(num_landmarks=100, prm_num_landmarks=200, prm_k=15)
     solver.load_scene(scene)
     path_collection = solver.solve() # Returns a PathCollection object
-
+    result = []
     for i, (robot, path) in enumerate(path_collection.paths.items()):
-        print("Path for robot {}:".format(i))
         for point in path.points:
-            print('\t', point.location) # point is of type PathPoint, point.location is CGALPY.Ker.Point_2
+            result.append(point.location)
+    return result
+
+def find_path(x,y):
+    global  X, Y
+    X = x
+    Y = y
+    path = main(X,Y)
+    moves = []
+    for i in range(len(path)-1):
+        x_move = path[i+1][0] - path[i][0]
+        y_move = path[i+1][1] - path[i][1]
+        moves.append([x_move,y_move])
+    return moves
+
+find_path(-3,0)

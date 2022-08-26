@@ -1,8 +1,12 @@
+import math
+
 from robomaster import robot
 import PySimpleGUI as sg
 import time
 import os
 import CGALPY_add_dlls
+
+import simple_motion_planning
 
 os.add_dll_directory("C:/Users/Alon/Documents/Robot/FDML-Build/src/libs/fdml/Release")
 import fdmlpy
@@ -149,14 +153,18 @@ def listener():
             flat_dist_list = [round(dis, 2) for sublist in n_scan.nway_dist_arr for dis in sublist]
             window['-DIST_ARR-'].update(f'Output = {flat_dist_list}')
             print(flat_dist_list)
-            preds = vbfdml_example.find_location(flat_dist_list)
+            preds = vbfdml_example.find_location(flat_dist_list, True)
             for pred in preds:
                 print(pred.x, pred.y, pred.theta)
             print("next phase")
-            ep_chassis.move(0.5, 0, 0, 0.5, 0).wait_for_completed()
-            # x,y,angel = vbfdml_example.find_location(flat_dist_list)
-            # moves = simple_motion_planning.zabi(x,y)
-            # robot_move(moves)
+            degrees_from_X_axis = math.degrees(pred.theta)
+            ep_chassis.move(0, 0, 270-degrees_from_X_axis, 0, 30).wait_for_completed()
+            location = preds[0]
+            moves = simple_motion_planning.find_path(location.x, location.y)
+            for move in moves:
+                ep_chassis.move(move[0], move[1], 0, 0.7, 0).wait_for_completed()
+            # party mode
+
         elif event == '-1hz-':
             chosen_freq = 1
         elif event == '-5hz-':

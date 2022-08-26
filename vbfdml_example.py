@@ -7,6 +7,7 @@ N = 70  # grid resolution - more accurate, more time.
 USE_GPU = True
 NUM_MEASUREMENTS = 0  # Set to 3 to see more predictions
 distance_measures = []
+show_map = False
 
 def run_vbfdml(poly, be, ms, n):
     # Single measurements
@@ -56,33 +57,41 @@ def main():
     poly.load_from_file('lab.poly')
 
     # Set the extent of the room (always the angle range > 2pi)
-    be = vbfdml.BoxExtent3(  # __init__(width: float, height: float, depth: float, dx: float, dy: float, dz: float)
-        5.1, 8.1, 2.1 * math.pi,  # extent
-        2.5, 4, 0  # offset
+    # be = vbfdml.BoxExtent3(  #  __init__(width: float, height: float, depth: float, dx: float, dy: float, dz: float)
+    #     6.1, 10.1, 2.1 * math.pi,  # extent
+    #     2.5, 4, 0  # offset
+    # )
+    be = vbfdml.BoxExtent3(  #lab
+        7, 5, 2.1 * math.pi,  # extent
+        1.5, 0, 0  # offset
     )
+
 
     # Generate four measurements
     ms = []
-    distance_measures = [1,1,1,3]
     for i in range(NUM_MEASUREMENTS ):
         ms.append(vbfdml.Measurement(distance_measures[i],(2*i*math.pi/NUM_MEASUREMENTS)))  # A single measurement the robot did. Angles are given in radians.
 
     # Get a list of predictions
     preds = run_vbfdml(poly, be, ms, N)
-
-    # Visuallize polygons and predictions
-    visualize_polygon(poly)
-    for pred in preds:
-        visualize_prediction(pred)
-    plt.show()
-
+    if show_map:
+        # Visuallize polygons and predictions
+        visualize_polygon(poly)
+        for pred in preds:
+            visualize_prediction(pred)
+        plt.show()
+    print(preds[0].x)
+    print(type(preds[0].x))
     return preds
 
-def find_location(measures):
-    global distance_measures, NUM_MEASUREMENTS
+def find_location(measures, show_location):
+    global distance_measures, NUM_MEASUREMENTS, show_map
+    show_map = show_location
     distance_measures = measures
     NUM_MEASUREMENTS = len(measures)
     preds = main()
     return preds
+
+find_location([1,1,1,3], True)
 
 
