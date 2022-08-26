@@ -86,12 +86,13 @@ def main():
 
 def find_location(measures, show_location):
     global distance_measures, NUM_MEASUREMENTS, show_map
+    print(show_location)
     show_map = show_location
     distance_measures = measures
     NUM_MEASUREMENTS = len(measures)
     preds = main()
     return preds
 
-find_location([1,1,1,3], True)
+
 
 
