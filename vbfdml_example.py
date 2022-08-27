@@ -20,6 +20,7 @@ def run_vbfdml(poly, be, ms, n):
     for vb in vbs[1:]:
         isect = vbfdml.do_intersect(isect, vb, n, False, USE_GPU)
 
+
     # Apply polygon filter and predict
     isect = vbfdml.polygon_filter(poly, be, isect)
     return vbfdml.predict(isect, be)
@@ -92,6 +93,7 @@ def find_location(measures, show_location):
     NUM_MEASUREMENTS = len(measures)
     preds = main()
     return preds
+
 
 
 

@@ -2,7 +2,7 @@ import json
 
 from discopygal.bindings import *
 from discopygal.solvers import PathPoint, Scene, RobotDisc, ObstaclePolygon
-from discopygal.solvers.rrt import dRRT
+from discopygal.solvers.rrt import dRRT, collision_detection
 
 
 X = 0
@@ -84,11 +84,8 @@ def main(x,y):
     scene.add_obstacle(top_wall)
     scene.add_obstacle(bottom_wall)
 
-    # Export the scene to file
-    # with open('examples/scenes/simple_motion_planning_scene.json', 'w') as fp:
-    #     json.dump(scene.to_dict(), fp)
 
-    # "Solve" the scene (find paths for the robots)
+    # Find paths for the robot
     solver = dRRT(num_landmarks=100, prm_num_landmarks=200, prm_k=15)
     solver.load_scene(scene)
     path_collection = solver.solve() # Returns a PathCollection object
@@ -97,6 +94,8 @@ def main(x,y):
         for point in path.points:
             result.append(point.location)
     print(result)
+    collisions = collision_detection.ObjectCollisionDetection([left_wall,right_wall,top_wall,bottom_wall], roboti)
+
     return result
 
 def find_path(x,y):
