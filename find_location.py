@@ -1,13 +1,13 @@
 import math
 import matplotlib.pyplot as plt
-
 import vbfdml
 
 N = 70  # grid resolution - more accurate, more time.
 USE_GPU = True
-NUM_MEASUREMENTS = 0  # Set to 3 to see more predictions
+NUM_MEASUREMENTS = 0
 distance_measures = []
 show_map = False
+
 
 def run_vbfdml(poly, be, ms, n):
     # Single measurements
@@ -19,7 +19,6 @@ def run_vbfdml(poly, be, ms, n):
     isect = vbs[0]
     for vb in vbs[1:]:
         isect = vbfdml.do_intersect(isect, vb, n, False, USE_GPU)
-
 
     # Apply polygon filter and predict
     isect = vbfdml.polygon_filter(poly, be, isect)
@@ -53,7 +52,6 @@ def visualize_prediction(pred: vbfdml.Prediction, arrow_size=0.075):
 
 
 def main():
-    # Load the polygon of Room 446
     poly = vbfdml.Polygon2D()
     poly.load_from_file('lab.poly')
 
@@ -62,16 +60,15 @@ def main():
     #     6.1, 10.1, 2.1 * math.pi,  # extent
     #     2.5, 4, 0  # offset
     # )
-    be = vbfdml.BoxExtent3(  #lab
+    be = vbfdml.BoxExtent3(  # lab
         7, 5, 2.1 * math.pi,  # extent
         1.5, 0, 0  # offset
     )
 
-
-    # Generate four measurements
     ms = []
-    for i in range(NUM_MEASUREMENTS ):
-        ms.append(vbfdml.Measurement(distance_measures[i],(2*i*math.pi/NUM_MEASUREMENTS)))  # A single measurement the robot did. Angles are given in radians.
+    for i in range(NUM_MEASUREMENTS):
+        ms.append(vbfdml.Measurement(distance_measures[i], (
+                    2 * i * math.pi / NUM_MEASUREMENTS)))  # A single measurement the robot did. Angles are given in radians.
 
     # Get a list of predictions
     preds = run_vbfdml(poly, be, ms, N)
@@ -81,9 +78,8 @@ def main():
         for pred in preds:
             visualize_prediction(pred)
         plt.show()
-    print(preds[0].x)
-    print(type(preds[0].x))
     return preds
+
 
 def find_location(measures, show_location):
     global distance_measures, NUM_MEASUREMENTS, show_map
@@ -93,8 +89,3 @@ def find_location(measures, show_location):
     NUM_MEASUREMENTS = len(measures)
     preds = main()
     return preds
-
-
-
-
-
