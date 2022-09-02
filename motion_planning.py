@@ -9,18 +9,18 @@ Y = 0
 def main(x, y):
     scene = Scene()
     robo = RobotDisc(
-        radius=FT(0.5),
+        radius=FT(0.4),
         start=Point_2(FT(x), FT(y)),
-        end=Point_2(FT(3.0), FT(3.0)))
+        end=Point_2(FT(2.8), FT(0.8)))
     scene.add_robot(robo)
 
     # Add obstacle in the middle
     middle_obstacle = ObstaclePolygon(
         poly=Polygon_2([
-            Point_2(FT(-1), FT(-1)),
-            Point_2(FT(-1), FT(1)),
-            Point_2(FT(1), FT(1)),
-            Point_2(FT(1), FT(-1))
+            Point_2(FT(0.98), FT(9.146)),
+            Point_2(FT(0.98), FT(7.06)),
+            Point_2(FT(1.61), FT(7.06)),
+            Point_2(FT(1.61), FT(9.06))
         ])
     )
     scene.add_obstacle(middle_obstacle)
@@ -28,40 +28,42 @@ def main(x, y):
     # Also add bounding walls
     left_wall = ObstaclePolygon(
         poly=Polygon_2([
-            Point_2(FT(-7), FT(-4)),
-            Point_2(FT(-7), FT(4)),
-            Point_2(FT(-6), FT(4)),
-            Point_2(FT(-6), FT(-4))
-        ])
-    )
-    right_wall = ObstaclePolygon(
-        poly=Polygon_2([
-            Point_2(FT(6), FT(-4)),
-            Point_2(FT(6), FT(4)),
-            Point_2(FT(7), FT(4)),
-            Point_2(FT(7), FT(-4))
+            Point_2(FT(0), FT(0)),
+            Point_2(FT(0), FT(9.285)),
+            Point_2(FT(-1), FT(-9.285)),
+            Point_2(FT(-1), FT(0))
         ])
     )
     top_wall = ObstaclePolygon(
         poly=Polygon_2([
-            Point_2(FT(-6), FT(3.5)),
-            Point_2(FT(-6), FT(4)),
-            Point_2(FT(6), FT(4)),
-            Point_2(FT(6), FT(3.5))
+            Point_2(FT(0), FT(9.28)),
+            Point_2(FT(3.9), FT(8.75)),
+            Point_2(FT(3.9), FT(10)),
+            Point_2(FT(0), FT(10))
         ])
     )
+    right_wall = ObstaclePolygon(
+        poly=Polygon_2([
+            Point_2(FT(3.9), FT(8.75)),
+            Point_2(FT(5.27), FT(-0.18)),
+            Point_2(FT(6), FT(-0.18)),
+            Point_2(FT(6), FT(8.75))
+        ])
+    )
+
     bottom_wall = ObstaclePolygon(
         poly=Polygon_2([
-            Point_2(FT(-6), FT(-4)),
-            Point_2(FT(-6), FT(-3.5)),
-            Point_2(FT(6), FT(-3.5)),
-            Point_2(FT(6), FT(-4))
+            Point_2(FT(5.27), FT(-0.18)),
+            Point_2(FT(0), FT(0)),
+            Point_2(FT(0), FT(-1)),
+            Point_2(FT(5.27), FT(-1))
         ])
     )
     scene.add_obstacle(left_wall)
     scene.add_obstacle(right_wall)
     scene.add_obstacle(top_wall)
     scene.add_obstacle(bottom_wall)
+    scene.add_obstacle(middle_obstacle)
 
     # Find paths for the robot
     solver = dRRT(num_landmarks=100, prm_num_landmarks=200, prm_k=15)
@@ -72,7 +74,17 @@ def main(x, y):
         for point in path.points:
             result.append(point.location)
     print(result)
+
     collisions = collision_detection.ObjectCollisionDetection([left_wall, right_wall, top_wall, bottom_wall], robo)
+    # i=0
+    # while len(result) > 2:
+    #     if (i<len(result)-2):
+    #         if isPath(result[i],result[i+2]):
+    #             result.remove(result[i+1])
+    #         else:
+    #             i+=1
+    #         continue
+    #     break
 
     return result
 
@@ -88,6 +100,3 @@ def find_path(x, y):
         y_move = path[i + 1][1] - path[i][1]
         moves.append([x_move, y_move])
     return moves
-
-
-find_path(3, 0)
