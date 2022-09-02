@@ -90,10 +90,18 @@ def listener():
         if event == sg.WIN_CLOSED:
             break
         elif event == '-loc&move-':
-            n_scan = EP_Robot([], [], [], values['-N-'] / 2)
+            n_scan = EP_Robot([], [], [], int(values['-N-']) / 2)
+            ep_robot.play_audio('song.wav')
+            ep_led = ep_robot.led
+            ep_chassis.move(0, 0, 770, 0, 60)
+            for i in range(0, 23):
+                ep_led.set_led(comp=led.COMP_ALL, r=250 , g=25 , b=25 , effect=led.EFFECT_ON)
+                time.sleep(.3)
+                ep_led.set_led(comp=led.COMP_ALL, r=0 , g=250 , b=250 , effect=led.EFFECT_ON)
+                time.sleep(.3)
             nway_measure_distance(n_scan)
             flat_dist_list = [round(dis, 2) for sublist in n_scan.nway_dist_arr for dis in sublist]
-            preds = find_location.find_location(flat_dist_list, values['-show_location-'])
+            preds = find_location.find_location(flat_dist_list, values['show_location'])
             for pred in preds:
                 print(pred.x, pred.y, pred.theta)
             degrees_from_X_axis = math.degrees(preds[0].theta)
@@ -104,12 +112,7 @@ def listener():
                 ep_chassis.move(move[0], move[1], 0, 0.7, 0).wait_for_completed()
             # party mode
             # play_audio( filename ) 48khz wav format
-            ep_led = ep_robot.led
-            bright = 1
-            for i in range(0, 8):
-                ep_led.set_led(comp=led.COMP_ALL, r=bright << i, g=bright << i, b=bright << i, effect=led.EFFECT_ON)
-                time.sleep(1)
-                print("brightness: {0}".format(bright << i))
+
 
             it = 0
             for i in range(0, 8):
