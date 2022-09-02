@@ -1,9 +1,10 @@
 import math
-from robomaster import robot
+from robomaster import robot, led
 import PySimpleGUI as sg
 import time
 import motion_planning
 import find_location
+
 
 """
 Basic GUI 
@@ -95,13 +96,32 @@ def listener():
             preds = find_location.find_location(flat_dist_list, values['-show_location-'])
             for pred in preds:
                 print(pred.x, pred.y, pred.theta)
-            degrees_from_X_axis = math.degrees(pred.theta)
+            degrees_from_X_axis = math.degrees(preds[0].theta)
             ep_chassis.move(0, 0, 270 - degrees_from_X_axis, 0, 30).wait_for_completed()
             location = preds[0]
             moves = motion_planning.find_path(location.x, location.y)
             for move in moves:
                 ep_chassis.move(move[0], move[1], 0, 0.7, 0).wait_for_completed()
             # party mode
+            # play_audio( filename ) 48khz wav format
+            ep_led = ep_robot.led
+            bright = 1
+            for i in range(0, 8):
+                ep_led.set_led(comp=led.COMP_ALL, r=bright << i, g=bright << i, b=bright << i, effect=led.EFFECT_ON)
+                time.sleep(1)
+                print("brightness: {0}".format(bright << i))
+
+            it = 0
+            for i in range(0, 8):
+                led1 = it % 8
+                led2 = (it + 1) % 8
+                led3 = (it + 2) % 8
+                it += 1
+                ep_led.set_gimbal_led(comp=led.COMP_TOP_ALL, r=255, g=25, b=25,
+                                      led_list=[led1, led2, led3], effect=led.EFFECT_ON)
+                print("Gimbal Led: {0} {1} {2} is on!".format(led1, led2, led3))
+                time.sleep(0.5)
+            ep_robot.led.set_gimbal_led()
 
     ep_robot.close()
     window.close()

@@ -10,7 +10,6 @@ show_map = False
 
 
 def run_vbfdml(poly, be, ms, n):
-    # Single measurements
     vbs = []
     for m in ms:
         vbs.append(vbfdml.single_measurement(poly, m, be, n, USE_GPU))
@@ -36,7 +35,6 @@ def visualize_polygon(poly: vbfdml.Polygon2D):
         Y.append(v.y)
     X.append(X[0])
     Y.append(Y[0])
-
     plt.plot(X, Y)
 
 
@@ -70,8 +68,7 @@ def main():
         ms.append(vbfdml.Measurement(distance_measures[i], (
                     2 * i * math.pi / NUM_MEASUREMENTS)))  # A single measurement the robot did. Angles are given in radians.
 
-    # Get a list of predictions
-    preds = run_vbfdml(poly, be, ms, N)
+    preds = run_vbfdml(poly, be, ms, N) # Get a list of predictions
     if show_map:
         # Visuallize polygons and predictions
         visualize_polygon(poly)
@@ -83,7 +80,6 @@ def main():
 
 def find_location(measures, show_location):
     global distance_measures, NUM_MEASUREMENTS, show_map
-    print(show_location)
     show_map = show_location
     distance_measures = measures
     NUM_MEASUREMENTS = len(measures)
