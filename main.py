@@ -5,15 +5,10 @@ import time
 import motion_planning
 import find_location
 
-
 """
 Basic GUI 
 """
-
-# sg.theme('Dark')
-# sg.set_options(element_padding=(3, 2))
-
-
+sg.theme('Dark')
 col = sg.Frame('Locate and Travel:',
                [[sg.Text('Number of measurements:', pad=((20, 3), 30)),
                  sg.Input(size=(6, 1), default_text='4', key='-N-',
@@ -27,7 +22,6 @@ layout = [[col]]
 
 window = sg.Window("Robo", layout,
                    default_element_size=(15, 15),
-                   # text_justification='center',
                    auto_size_text=True,
                    auto_size_buttons=True,
                    element_justification='center',
@@ -62,11 +56,12 @@ class EP_Robot:
             self.front_direction_dis_arr = []
             self.back_direction_dis_arr = []
             if len(self.nway_dist_arr) != int(self.n_way):
-                move_chassi(0, 0, 183 / int(self.n_way), rot_speed=80)  # 183 behaves better than 180 due to wheel friction
+                move_chassi(0, 0, 183 / int(self.n_way),
+                            rot_speed=80)  # 183 behaves better than 180 due to wheel friction
             return
         cur_dist = (dis_arr[0] + 80) / 1000  # front sensor 8cm from center
         self.front_direction_dis_arr.append(cur_dist)
-        cur_back_dis = (dis_arr[1] + 125) / 1000  # back sensor 8cm from center
+        cur_back_dis = (dis_arr[1] + 125) / 1000  # back sensor 12.5cm from center
         self.back_direction_dis_arr.append(cur_back_dis)
 
 
@@ -80,27 +75,25 @@ def nway_measure_distance(n_scan):
 def move_chassi(x, y, z, xy_speed=0.5, rot_speed=30.0):
     ep_chassis.move(x, y, z, xy_speed, rot_speed).wait_for_completed()
 
+
 def party():
-    ep_arm = ep_robot.robotic_arm
-    # ep_robot.play_audio('song.wav')
+    ep_robot.play_audio('song.wav')
     ep_led = ep_robot.led
-    ep_arm.move(x=0, y=120).wait_for_completed()
     ep_chassis.move(0, 0, 770, 0, 60)
     for i in range(0, 23):
-        ep_led.set_led(comp=led.COMP_ALL, r=250 , g=25 , b=25 , effect=led.EFFECT_ON)
+        ep_led.set_led(comp=led.COMP_ALL, r=250, g=25, b=25, effect=led.EFFECT_ON)
         time.sleep(.3)
-        ep_led.set_led(comp=led.COMP_ALL, r=0 , g=250 , b=250 , effect=led.EFFECT_ON)
+        ep_led.set_led(comp=led.COMP_ALL, r=0, g=250, b=250, effect=led.EFFECT_ON)
         time.sleep(.3)
+
 
 def listener():
-
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
             break
         elif event == '-loc&move-':
             n_scan = EP_Robot([], [], [], math.ceil(int(values['-N-']) / 2))
-
             nway_measure_distance(n_scan)
             flat_dist_list = [round(dis, 2) for sublist in n_scan.nway_dist_arr for dis in sublist]
             preds = find_location.find_location(flat_dist_list, values['show_location'])
@@ -109,25 +102,13 @@ def listener():
                 theta = location.theta
                 degrees_from_X_axis = math.degrees(theta)
                 ep_chassis.move(0, 0, -degrees_from_X_axis, 0, 60).wait_for_completed()
-                ep_chassis.move(0.8 - location.y,2.8 - location.x, 0, 0.7, 0).wait_for_completed()
+                print(location.x, location.y)
+                ep_chassis.move(0.8 - location.y, 2.8 - location.x, 0, 0.7, 0).wait_for_completed()
                 # moves = motion_planning.find_path(location.x, location.y)
                 # print(moves)
                 # for move in moves:
                 #     ep_chassis.move(float(str(move[1])), float(str(move[0])), 0, 0.7, 0).wait_for_completed()
                 party()
-
-
-            # it = 0
-            # for i in range(0, 8):
-            #     led1 = it % 8
-            #     led2 = (it + 1) % 8
-            #     led3 = (it + 2) % 8
-            #     it += 1
-            #     ep_led.set_gimbal_led(comp=led.COMP_TOP_ALL, r=255, g=25, b=25,
-            #                           led_list=[led1, led2, led3], effect=led.EFFECT_ON)
-            #     print("Gimbal Led: {0} {1} {2} is on!".format(led1, led2, led3))
-            #     time.sleep(0.5)
-            # ep_robot.led.set_gimbal_led()
 
     ep_robot.close()
     window.close()

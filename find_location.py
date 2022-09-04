@@ -53,14 +53,9 @@ def main():
     poly = vbfdml.Polygon2D()
     poly.load_from_file('map.poly')
 
-    # Set the extent of the room (always the angle range > 2pi)
-    # be = vbfdml.BoxExtent3(  #  __init__(width: float, height: float, depth: float, dx: float, dy: float, dz: float)
-    #     6.1, 10.1, 2.1 * math.pi,  # extent
-    #     2.5, 4, 0  # offset
-    # )
-    be = vbfdml.BoxExtent3(  # lab
-        7, 5, 2.1 * math.pi,  # extent
-        1.5, 0, 0  # offset
+    be = vbfdml.BoxExtent3(
+        6.1, 10.1, 2.1 * math.pi,  # extent
+        2.5, 4, 0  # offset
     )
 
     ms = []
@@ -85,16 +80,13 @@ def find_location(measures, show_location):
     NUM_MEASUREMENTS = len(measures)
     order = []
     for i in range(NUM_MEASUREMENTS):
-        if i%2==0:
+        if i % 2 == 0:
             order.append(measures[i])
     for i in range(NUM_MEASUREMENTS):
-        if i%2==1:
+        if i % 2 == 1:
             order.append(measures[i])
     print(order)
     distance_measures = order
     preds = main()
     return preds
 
-
-# find_location([ 3.98, 5.06,1, 2.06], True)
-# find_location([5.06,1, 2.06, 3.98], True)
