@@ -85,7 +85,6 @@ def find_location(measures, show_location):
     for i in range(NUM_MEASUREMENTS):
         if i % 2 == 1:
             order.append(measures[i])
-    print(order)
     distance_measures = order
     preds = main()
     return preds

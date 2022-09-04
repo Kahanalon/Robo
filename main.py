@@ -102,7 +102,6 @@ def listener():
                 theta = location.theta
                 degrees_from_X_axis = math.degrees(theta)
                 ep_chassis.move(0, 0, -degrees_from_X_axis, 0, 60).wait_for_completed()
-                print(location.x, location.y)
                 ep_chassis.move(0.8 - location.y, 2.8 - location.x, 0, 0.7, 0).wait_for_completed()
                 # moves = motion_planning.find_path(location.x, location.y)
                 # print(moves)

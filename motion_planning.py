@@ -1,6 +1,8 @@
 from discopygal.bindings import *
 from discopygal.solvers import Scene, RobotDisc, ObstaclePolygon
 from discopygal.solvers.rrt import dRRT, collision_detection
+from CGALPY.Ker.Segment_2 import Segment_2
+
 
 X = 0
 Y = 0
@@ -75,11 +77,15 @@ def main(x, y):
             result.append(point.location)
     print(result)
 
-    collisions = collision_detection.ObjectCollisionDetection([left_wall, right_wall, top_wall, bottom_wall], robo)
     # i=0
+    # map_with_robot = collision_detection.ObjectCollisionDetection([left_wall, right_wall, top_wall, bottom_wall], robo)
     # while len(result) > 2:
     #     if (i<len(result)-2):
-    #         if isPath(result[i],result[i+2]):
+    #         point1 = CGALPY.Ker.Point_2(result[i])
+    #         point2 = CGALPY.Ker.Point_2(result[i+1])
+    #         cur_edge = Segment_2(point1, point2)
+    #         if map_with_robot.is_edge_valid(cur_edge): #edge: class:`Ker.Segment_2`
+    #         # if isPath(result[i],result[i+2]):
     #             result.remove(result[i+1])
     #         else:
     #             i+=1
