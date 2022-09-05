@@ -78,7 +78,7 @@ def find_location(measures, show_location):
     show_map = show_location
 
     NUM_MEASUREMENTS = len(measures)
-    order = []
+    order = []  # sync the measures order from robot to the expected order by vbfdml
     for i in range(NUM_MEASUREMENTS):
         if i % 2 == 0:
             order.append(measures[i])
@@ -88,4 +88,3 @@ def find_location(measures, show_location):
     distance_measures = order
     preds = main()
     return preds
-

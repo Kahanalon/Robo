@@ -13,6 +13,7 @@ def main(x, y):
     with open("scene.json", "r") as fp:
         d = json.load(fp)
         scene = Scene.from_dict(d)
+    scene.robots[0].start = CGALPY.Ker.Point_2(x,y)
     solver = PRM(num_landmarks=200, k=15)
     solver.load_scene(scene)
     path_collection = solver.solve()  # Returns a PathCollection object
