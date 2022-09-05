@@ -21,8 +21,6 @@ def main(x, y):
     for i, (robot, path) in enumerate(path_collection.paths.items()):
         for point in path.points:
             moves.append(point.location)
-    print(f'moves before collision check: {moves}')
-
     i = 0
     map_with_robot = collision_detection.ObjectCollisionDetection(scene.obstacles, scene.robots[0])
     while len(moves) > 2:
@@ -36,7 +34,6 @@ def main(x, y):
                 i += 1
             continue
         break
-    print(f'moves after collision check: {moves}')
     return moves
 
 
