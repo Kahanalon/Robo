@@ -57,7 +57,7 @@ class EP_Robot:
             self.back_direction_dis_arr = []
             if len(self.nway_dist_arr) != int(self.n_way):
                 move_chassi(0, 0, 183 / int(self.n_way),
-                            rot_speed=80)  # 183 behaves better than 180 due to wheel friction
+                            rot_speed=80)  # 183 behaves better than 180 due to slippery floor
             return
         cur_dist = (dis_arr[0] + 80) / 1000  # front sensor 8cm from center
         self.front_direction_dis_arr.append(cur_dist)
@@ -102,12 +102,11 @@ def listener():
                 theta = location.theta
                 degrees_from_X_axis = math.degrees(theta)
                 ep_chassis.move(0, 0, -degrees_from_X_axis, 0, 60).wait_for_completed()
-                # ep_chassis.move(0.8 - location.y, 2.8 - location.x, 0, 0.7, 0).wait_for_completed()
                 moves = motion_planning.find_path(location.x, location.y)
                 print(f'moves relative to robot: {moves}')
                 for move in moves:
                     ep_chassis.move(float(str(move[1])), float(str(move[0])), 0, 0.7, 0).wait_for_completed()
-                # party()
+                party()
 
     ep_robot.close()
     window.close()
